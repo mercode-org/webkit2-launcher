@@ -21,6 +21,8 @@ stdenv.mkDerivation {
   ];
 
   installPhase = ''
-    install -D launcher/src.py $out/bin/webkit2-launcher
+    mkdir -p $out/{lib,bin}
+    cp -r launcher/ $out/lib/webkit2-launcher
+    ln -s $out/lib/webkit2-launcher/__init__.py $out/bin/webkit2-launcher
   '';
 }
