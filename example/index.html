@@ -25,8 +25,23 @@
 <body>
   <h2>WebKit2 Launcher</h2>
   <p>With this tool you can launch simple HTML apps as native apps</p>
+  <hr>
+  <h4>package.json</h4>
   <div class="box">
-    $ webkit2-launcher ./path-to-your-app
+    {
+      "launcher": {
+        "title": "Hello World",
+        "icon": "gtk-yes",
+        "main": "./index.html",
+        "width": 800,
+        "height": 600
+      }
+    }
+  </div>
+  <hr>
+  <h4>Launch command</h4>
+  <div class="box">
+    $ webkit2-launcher ./path/to/your-app-folder
   </div>
 </body>
 
