@@ -1,0 +1,6 @@
+{
+  "launcher": {
+    "title": "Hello World",
+    "main": "./index.html"
+  }
+}
