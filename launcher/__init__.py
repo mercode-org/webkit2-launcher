@@ -40,16 +40,27 @@ class Launcher(Gtk.Window):
         settings = self.browser.get_settings()
         settings.set_property("allow-file-access-from-file-urls", True)
 
-        if "title" in config:
-            self.set_title(config['title'])
-
-        self.main = path.abspath(path.join(app_dir, config['main']))
-        if not path.exists(self.main):
-            die("%s (main file) does not exist" % self.main)
+        self.main = self._resource_path(config['main'])
 
         self.reset_browser()
 
-        log.info("Displaying app")
+        # these are processed in the same order as docs. if not, add a comment.
+
+        if "title" in config:
+            self.set_title(config['title'])
+
+        if "width" in config or "height" in config: # both require each other
+            self.set_default_size(config['width'], config['height'])
+
+        # minWidth & minHeight todo
+
+        if "iconPath" in config:
+            self.set_icon_from_file(self._resource_path(config['iconPath']))
+
+        if "icon" in config:
+            self.set_icon_name(config['icon'])
+
+        log.debug("Displaying app")
 
         # self.button = Gtk.Button(label="Click Here")
         # self.button.connect("clicked", self.on_button_clicked)
@@ -57,8 +68,16 @@ class Launcher(Gtk.Window):
         self.add(self.browser)
         self.show_all()
 
+    def _resource_path(self, resource, check_exists=True):
+        res_path = path.abspath(path.join(self.app_dir, resource))
+        log.debug("resource path %s" % res_path)
+        if check_exists and not path.exists(res_path):
+            die("%s does not exist, but is required" % res_path)
+
+        return res_path
+
     def reset_browser(self):
-        log.info("Reseting browser to %s" % self.main)
+        log.debug("Reseting browser to %s" % self.main)
         self.browser.load_uri("file://%s" % self.main)
 
     def on_button_clicked(self, widget):
@@ -67,7 +86,7 @@ class Launcher(Gtk.Window):
 if __name__ == "__main__":
     folder = path.abspath(sys.argv[1])
 
-    log.info("Loading app @ %s" % folder)
+    log.debug("Loading app @ %s" % folder)
 
     config_file = path.join(folder, "package.json")
 
@@ -84,7 +103,7 @@ if __name__ == "__main__":
         die("%s does not contain required property config.launcher.main" % config_file)
 
     win = Launcher(app_dir=folder, config=config['launcher'])
-    # win.connect("delete-event", Gtk.main_quit)
+    win.connect("destroy", Gtk.main_quit)
     win.show_all()
 
     # This launcher everything
