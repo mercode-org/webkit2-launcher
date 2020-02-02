@@ -1,12 +1,21 @@
+#!/usr/bin/env python3
+
 import gi
-gi.require_version('Gtk', '3.0')
 gi.require_version('WebKit2', '4.0')
-from gi.repository import Gtk, WebKit2
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import GLib, Gdk, Gtk, WebKit2
+from configparser import ConfigParser
 
 import logging
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
 log.setLevel(logging.DEBUG)
+
+# TODO: use
+# parser = OptionParser()
+# parser.add_option("-d", "--debug", help="Debug mode", metavar="DEBUG", default=False)
+# (options, args) = parser.parse_args()
 
 import sys
 import json
@@ -28,6 +37,9 @@ class Launcher(Gtk.Window):
 
         self.browser = WebKit2.WebView()
 
+        settings = self.browser.get_settings()
+        settings.set_property("allow-file-access-from-file-urls", True)
+
         if "title" in config:
             self.set_title(config['title'])
 
@@ -36,6 +48,8 @@ class Launcher(Gtk.Window):
             die("%s (main file) does not exist" % self.main)
 
         self.reset_browser()
+
+        log.info("Displaying app")
 
         # self.button = Gtk.Button(label="Click Here")
         # self.button.connect("clicked", self.on_button_clicked)
@@ -70,6 +84,8 @@ if __name__ == "__main__":
         die("%s does not contain required property config.launcher.main" % config_file)
 
     win = Launcher(app_dir=folder, config=config['launcher'])
-    win.connect("delete-event", Gtk.main_quit)
+    # win.connect("delete-event", Gtk.main_quit)
     win.show_all()
+
+    # This launcher everything
     Gtk.main()
