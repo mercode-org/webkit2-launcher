@@ -1,6 +1,7 @@
 {
   "launcher": {
     "title": "Hello World",
+    "icon": "gtk-yes",
     "main": "./index.html"
   }
 }
