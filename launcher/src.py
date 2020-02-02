@@ -12,6 +12,10 @@ import sys
 import json
 from os import path
 
+def die(err):
+    log.error(err)
+    sys.exit(2)
+
 class Launcher(Gtk.Window):
 
     def __init__(self, app_dir, config):
@@ -22,28 +26,50 @@ class Launcher(Gtk.Window):
         self.app_dir = app_dir
         self.config = config
 
-        if "title" in config:
-            self.set_title(config.title)
+        self.browser = WebKit2.WebView()
 
-        main = path.abspath(path.join(app_dir, config.main))
+        if "title" in config:
+            self.set_title(config['title'])
+
+        self.main = path.abspath(path.join(app_dir, config['main']))
+        if not path.exists(self.main):
+            die("%s (main file) does not exist" % self.main)
+
+        self.reset_browser()
 
         # self.button = Gtk.Button(label="Click Here")
         # self.button.connect("clicked", self.on_button_clicked)
         # self.add(self.button)
+        self.add(self.browser)
+        self.show_all()
+
+    def reset_browser(self):
+        log.info("Reseting browser to %s" % self.main)
+        self.browser.load_uri("file://%s" % self.main)
 
     def on_button_clicked(self, widget):
         print("Hello World")
 
-folder = path.abspath(sys.argv[1])
+if __name__ == "__main__":
+    folder = path.abspath(sys.argv[1])
 
-log.info("Loading app @ %s" % folder)
+    log.info("Loading app @ %s" % folder)
 
-config_file = path.join(folder, "package.json")
+    config_file = path.join(folder, "package.json")
 
-with open(config_file) as f:
-    config = json.load(f)
+    if not path.exists(config_file):
+        die("%s does not exist, not a launchable app" % config_file)
 
-win = Launcher(app_dir=folder, config=config)
-#  win.connect("destroy", Gtk.main_quit)
-win.show_all()
-Gtk.main()
+    with open(config_file) as f:
+        config = json.load(f)
+
+    if not "launcher" in config:
+        die("%s does not contain required property config.launcher.main" % config_file)
+
+    if not "main" in config['launcher']:
+        die("%s does not contain required property config.launcher.main" % config_file)
+
+    win = Launcher(app_dir=folder, config=config['launcher'])
+    win.connect("delete-event", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
