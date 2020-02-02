@@ -23,7 +23,7 @@ stdenv.mkDerivation {
   installPhase = ''
     mkdir -p $out/{lib,bin}
     cp -r launcher/ $out/lib/webkit2-launcher
-    cp -r example/ $out/lib/example
+    cp -r example/ $out/example
     ln -s $out/lib/webkit2-launcher/__init__.py $out/bin/webkit2-launcher
   '';
 }
