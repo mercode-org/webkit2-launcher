@@ -5,17 +5,20 @@ gi.require_version('WebKit2', '4.0')
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import GLib, Gdk, Gtk, WebKit2
-from configparser import ConfigParser
+from optparse import OptionParser
+# from configparser import ConfigParser
+
+parser = OptionParser()
+parser.add_option("-d", "--debug", help="Debug mode", metavar="DEBUG", default=False, action="store_true", dest="debug")
+(options, args) = parser.parse_args()
 
 import logging
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
-log.setLevel(logging.DEBUG)
-
-# TODO: use
-# parser = OptionParser()
-# parser.add_option("-d", "--debug", help="Debug mode", metavar="DEBUG", default=False)
-# (options, args) = parser.parse_args()
+if options.debug:
+    log.setLevel(logging.DEBUG)
+else:
+    log.setLevel(logging.INFO)
 
 import sys
 import json
@@ -84,7 +87,10 @@ class Launcher(Gtk.Window):
         print("Hello World")
 
 if __name__ == "__main__":
-    folder = path.abspath(sys.argv[1])
+    if len(args):
+        folder = path.abspath(args[0])
+    else:
+        folder = path.abspath(path.join(path.dirname(__file__), '..', 'example'))
 
     log.debug("Loading app @ %s" % folder)
 
