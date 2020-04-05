@@ -3,6 +3,7 @@
 , gnome3
 , python3
 , wrapGAppsHook
+, glib-networking
 }:
 
 stdenv.mkDerivation {
@@ -15,9 +16,14 @@ stdenv.mkDerivation {
     gnome3.gtk3
     gnome3.glib
     gnome3.webkitgtk
+    glib-networking
     gobject-introspection
     (python3.withPackages( ps: with ps;[ pygobject3 ] ))
+  ];
+
+  nativeBuildInputs = [
     wrapGAppsHook
+    gobject-introspection
   ];
 
   installPhase = ''
