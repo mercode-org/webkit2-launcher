@@ -16,3 +16,23 @@ In your package.json add the object launcher. It can have the following properti
 - `minHeight`, integer: Minimal window height in pixel
 - `iconPath`, path: Taskbar icon path to use
 - `icon`, string: Taskbar icon name to use
+
+# Development
+
+If you're not on nixOS/merOS, install nix first
+
+```sh
+curl -L https://nixos.org/nix/install | sh
+```
+
+Afterwards launch the nix-shell for development
+
+```sh
+nix-shell
+```
+
+Now you can start webkit2-launcher by running
+
+```sh
+webkit2-launcher
+```
