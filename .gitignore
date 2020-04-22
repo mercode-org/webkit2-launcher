@@ -1,1 +1,3 @@
 result
+*.egg*
+__pycache__

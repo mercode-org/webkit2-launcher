@@ -1,13 +1,17 @@
 { stdenv
-, gobject-introspection
-, gnome3
+, fetchurl
 , python3
+, gtk3
+, glib
+, gobject-introspection
 , wrapGAppsHook
+, callPackage
 , glib-networking
+, gnome3
 }:
 
-stdenv.mkDerivation {
-  pname = "webkit2-launcher";
+python3.pkgs.buildPythonApplication rec {
+  name = "webkit2-launcher-${version}";
   version = "0.0.1";
 
   src = ./.;
@@ -18,18 +22,20 @@ stdenv.mkDerivation {
     gnome3.webkitgtk
     glib-networking
     gobject-introspection
-    (python3.withPackages( ps: with ps;[ pygobject3 ] ))
-  ];
 
-  nativeBuildInputs = [
     wrapGAppsHook
-    gobject-introspection
   ];
 
-  installPhase = ''
-    mkdir -p $out/{lib,bin}
-    cp -r launcher/ $out/lib/webkit2-launcher
-    cp -r example/ $out/example
-    ln -s $out/lib/webkit2-launcher/__init__.py $out/bin/webkit2-launcher
-  '';
+  propagatedBuildInputs = with python3.pkgs; [
+    pygobject3
+  ];
+
+  doCheck = false;
+
+  meta = with stdenv.lib; {
+    description = "A very simple launcher for webapps";
+    homepage = https://os.mercode.org;
+    license = licenses.gpl2;
+    maintainers = with maintainers; [ mkg20001 ];
+  };
 }
